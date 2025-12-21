@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rpackagemanager"
+version = "0.1.0"
+description = "Ein Wrapper für rpy2 zur Verwaltung von R-Paketen in Python-Umgebungen."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "rpy2>=3.5.0",
+    "pandas>=1.0.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/DEIN_USERNAME/RPackageManager"
+
+[tool.setuptools.packages.find]
+where = ["src"]
