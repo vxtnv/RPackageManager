@@ -4,4 +4,4 @@ A Python wrapper for rpy2 that automatically manages R packages in a local envir
 
 ## Installation
 
-!pip install --force-reinstall git+https://github.com/vxtnv/RPackageManager.git
+!pip install --force-reinstall "git+https://github.com/vxtnv/RPackageManager.git"

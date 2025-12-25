@@ -6,7 +6,7 @@
 # !pip install --upgrade rpy2
 
 # 3. Install the RPackageManager (if not already done or to update)
-# !pip install --force-reinstall git+https://github.com/vxtnv/RPackageManager.gitfrom 
+# !pip install --force-reinstall "git+https://github.com/vxtnv/RPackageManager.git"
 
 from RPackageManager import RPackageManager
 import rpy2.robjects as robjects
