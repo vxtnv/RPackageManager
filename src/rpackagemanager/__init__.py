@@ -4,14 +4,14 @@ import shutil
 from pathlib import Path
 
 # --- MAC SILICON SETUP ---
-# Wir setzen R_HOME, damit rpy2 das Homebrew-R findet
+# Sets R_HOME so that rpy2 finds the Homebrew-R installation
 if sys.platform == "darwin":
     homebrew_r = Path("/opt/homebrew/lib/R")
     if homebrew_r.exists():
         os.environ["R_HOME"] = str(homebrew_r)
 
-# Versuche Imports; bei Fehler wird eine klare Exception geworfen,
-# aber sys.exit() wird vermieden, damit Tools nicht abstürzen.
+# Attempt imports; a clear Exception is thrown on error,
+# but sys.exit() is avoided to prevent tools from crashing.
 try:
     import rpy2.robjects as robjects
     from rpy2.robjects.packages import importr
@@ -19,45 +19,45 @@ try:
     from rpy2.robjects import pandas2ri
     from rpy2.robjects.conversion import localconverter
 except ImportError as e:
-    raise ImportError(f"CRITICAL: rpy2 fehlt. Fehler: {e}. \n"
-                      "TIPP: Falls 'Library not loaded' erscheint, prüfe die brew-Installation.") from e
+    raise ImportError(f"CRITICAL: rpy2 missing. Error: {e}. \n"
+                      "TIP: If 'Library not loaded' appears, check the brew installation.") from e
 
 class RPackageManager:
     def __init__(self, lib_dirname="r_libs"):
-        # 1. Pfad im venv definieren
+        # 1. Defines path within venv
         self.venv_path = os.environ.get("VIRTUAL_ENV")
         if self.venv_path:
             self.lib_path = Path(self.venv_path) / lib_dirname
         else:
             self.lib_path = Path.cwd() / lib_dirname
 
-        # 2. Ordner erstellen
+        # 2. Creates directory
         self.lib_path.mkdir(parents=True, exist_ok=True)
         self.lib_path_str = str(self.lib_path.absolute())
         
-        # 3. R mitteilen: "Nutze diesen Ordner zuerst!"
+        # 3. Tell R: "Use this directory first!"
         robjects.r(f'.libPaths(c("{self.lib_path_str}", .libPaths()))')
         
-        print(f"📦 R-Manager bereit. Library: {self.lib_path_str}")
+        print(f"📦 R-Manager ready. Library: {self.lib_path_str}")
 
-    def install(self, package_name):
-        """Installiert Paket ZWINGEND in den lokalen Ordner."""
+    def install_packages(self, package_name):
+        """Installs package MANDATORILY into the local folder."""
         
-        # --- ÄNDERUNG: Strikter Check auf lokalen Ordner ---
+        # Strict check for local folder ---
         local_pkg_path = self.lib_path / package_name
         
         if local_pkg_path.exists():
-            print(f"✅ Paket '{package_name}' ist bereits LOKAL vorhanden.")
+            print(f"✅ Package '{package_name}' already exists LOCALLY.")
             return
 
-        print(f"⏳ Installiere '{package_name}' nach {self.lib_path_str} ...")
+        print(f"⏳ Installing '{package_name}' to {self.lib_path_str} ...")
         
         utils = importr('utils')
-        # Verwende einen stabilen Mirror
+        # Use a stable mirror
         mirror = "https://cloud.r-project.org"
         
         try:
-            # Versuch 1: Standard Installation in den lokalen Pfad
+            # Attempt 1: Standard installation to the local path
             utils.install_packages(
                 StrVector([package_name]),
                 lib=self.lib_path_str,
@@ -66,34 +66,18 @@ class RPackageManager:
                 dependencies=True
             )
         except Exception:
-            # Versuch 2: Fallback (Checks ignorieren)
-            print("⚠️ Standard-Install fehlgeschlagen. Nutze Fallback...")
+            # Attempt 2: Fallback (ignore checks)
+            print("⚠️ Standard install failed. Using fallback...")
             robjects.r(f'''
-                install.packages("{package_name}", 
-                 lib="{self.lib_path_str}", 
-                 repos="{mirror}", 
-                 type="source",
+                install.packages("{package_name}",
+                  lib="{self.lib_path_str}",
+                  repos="{mirror}",
+                  type="source",
                 checkBuilt=FALSE)
             ''')
 
-        # Check: Ist es jetzt im lokalen Ordner?
+        # Check: Is it now in the local folder?
         if local_pkg_path.exists():
-            print(f"✅ '{package_name}' erfolgreich im venv installiert.")
+            print(f"✅ '{package_name}' successfully installed in venv.")
         else:
-            raise RuntimeError(f"❌ Fehler: '{package_name}' konnte nicht lokal installiert werden.")
-
-    def get_auto_data(self):
-        """Lädt Auto-Daten aus ISLR2 und gibt Pandas DataFrame zurück."""
-        pkg_name = "ISLR2"
-        self.install(pkg_name)
-        
-        print(f"Lade Daten aus {pkg_name}...")
-        # Daten in den R-Workspace laden
-        robjects.r(f'data(Auto, package="{pkg_name}")')
-        r_data = robjects.globalenv["Auto"]
-        
-        # Konvertierung zu Pandas
-        with localconverter(robjects.default_converter + pandas2ri.converter):
-            pd_df = robjects.conversion.rpy2py(r_data)
-            
-        return pd_df
+            raise RuntimeError(f"❌ Error: '{package_name}' could not be installed locally.")

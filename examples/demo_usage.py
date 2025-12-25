@@ -1,69 +1,52 @@
-# 1. R-Basis sicherstellen (ist meist da, aber sicher ist sicher)
+# 1. Ensure R base is present (usually there, but better safe than sorry)
 # !apt-get update -qq
 # !apt-get install -y -qq r-base
 
-# 2. rpy2 explizit installieren (oft hilft ein Reinstall, um die Pfade zu R zu finden)
+# 2. Explicitly install rpy2 (a reinstall often helps to find the paths to R)
 # !pip install --upgrade rpy2
 
-# 3. Dein Paket installieren (falls noch nicht geschehen oder zum Aktualisieren)
-# !pip install --force-reinstall git+https://github.com/vxtnv/RPackageManager.git
+# 3. Install the RPackageManager (if not already done or to update)
+# !pip install --force-reinstall git+https://github.com/vxtnv/RPackageManager.gitfrom 
 
-
-
-from rpackagemanager import RPackageManager
+from RPackageManager import RPackageManager
 import rpy2.robjects as robjects
 from rpy2.robjects.packages import importr
 
 def main():
-    print("🚀 Starte RPackageManager Demo...")
+    print("🚀 Starting RPackageManager Demo...")
 
-    # 1. Initialisieren
-    # Erstellt automatisch 'r_libs' im aktuellen Verzeichnis oder venv
-    # Manager initialisieren (setzt .libPaths auf .venv/r_libs)
+    # 1. Initialize
+    # Automatically creates 'r_libs' in the current directory or venv
+    # Initialize manager (sets .libPaths to .venv/r_libs)
     r = RPackageManager()
 
-    # 2. 'forecast' Paket installieren
-    # Hinweis: Das kann beim ersten Mal ein paar Minuten dauern, 
-    # da 'forecast' viele Abhängigkeiten (Rcpp, colorspace, etc.) hat.
-    print("Installiere 'forecast' (das kann dauern)...")
-    r.install("forecast")
+    # 2. Install 'forecast' package
+    # Note: This may take a few minutes the first time, 
+    # as 'forecast' has many dependencies (Rcpp, colorspace, etc.).
+    print("Installing 'forecast' (this may take a while)...")
+    r.install_packages("forecast")
 
-    # 3. Paket laden
+    # 3. Load package
     forecast = importr("forecast")
 
-    # --- BEWEIS: Woher kommt das Paket? ---
-    # Fix: Abfrage außerhalb des f-Strings machen
+    # --- PROOF: Where does the package come from? ---
+    # Fix: Make query outside of f-string
     pkg_path = robjects.r('system.file(package="forecast")')[0]
-    print(f"✅ Ladeort von forecast: {pkg_path}")
+    print(f"✅ Load location of forecast: {pkg_path}")
 
-    # 4. Daten vorbereiten (AirPassengers Beispiel)
-    print("Lade AirPassengers Daten...")
+    # 4. Prepare data (AirPassengers example)
+    print("Loading AirPassengers data...")
     robjects.r('data(AirPassengers)')
     air_passengers = robjects.globalenv['AirPassengers']
 
-    # 5. auto.arima ausführen
-    print("\n--- Starte auto.arima ---")
+    # 5. Execute auto.arima
+    print("\n--- Starting auto.arima ---")
     model = forecast.auto_arima(air_passengers)
 
-    # Ergebnis anzeigen
-    print("\n--- Modell Ergebnis ---")
+    # Display result
+    print("\n--- Model Result ---")
     print(model)
-
-
-
 
 if __name__ == "__main__":
     main()
 
-
-
-
-    """
-
-
-
-
-
-
-
-"""

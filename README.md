@@ -1,6 +1,6 @@
 # RPackageManager
 
-Ein Python-Wrapper für `rpy2`, der R-Pakete automatisch in einer lokalen Umgebung verwaltet.
+A Python wrapper for rpy2 that automatically manages R packages in a local environment.
 
 ## Installation
 
