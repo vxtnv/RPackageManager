@@ -15,13 +15,13 @@ import pyarrow as pa
 import rpy2.robjects as robjects
 from rpy2.robjects import pandas2ri
 from rpy2.robjects.conversion import localconverter
-from RPackageManager import RPackageManager
+from rpackagemanager import rpackagemanager
 
 # ---------------------------------------------------------
 # 1. SETUP
 # ---------------------------------------------------------
 print("--- 1. Setup ---")
-r = RPackageManager()
+r = rpackagemanager()
 r.install_packages("arrow") # Important R Package for Method 2
 
 # Only import the bridge now

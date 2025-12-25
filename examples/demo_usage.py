@@ -9,7 +9,7 @@
 # pip install --force-reinstall "git+https://github.com/vxtnv/RPackageManager.git"
 #
 
-from RPackageManager import RPackageManager
+from rpackagemanager import rpackagemanager
 import rpy2.robjects as robjects
 from rpy2.robjects.packages import importr
 
@@ -19,7 +19,7 @@ def main():
     # 1. Initialize
     # Automatically creates 'r_libs' in the current directory or venv
     # Initialize manager (sets .libPaths to .venv/r_libs)
-    r = RPackageManager()
+    r = rpackagemanager()
 
     # 2. Install 'forecast' package
     # Note: This may take a few minutes the first time, 
