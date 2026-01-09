@@ -8,6 +8,13 @@
 # 3. Install RPackageManager (if not already done or to update)
 # pip install --force-reinstall "git+https://github.com/vxtnv/RPackageManager.git"
 
+
+# if installation of arrow fails:
+# rm -rf /Users/marlons/Downloads/MS00MV04/.venv/r_libs/00LOCK-arrow
+# brew update
+# brew install apache-arrow
+
+
 import time
 import pandas as pd
 import numpy as np

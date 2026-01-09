@@ -9,6 +9,11 @@
 # pip install --force-reinstall "git+https://github.com/vxtnv/RPackageManager.git"
 #
 
+# if installation of arrow fails:
+# rm -rf /Users/marlons/Downloads/MS00MV04/.venv/r_libs/00LOCK-arrow
+# brew update
+# brew install apache-arrow
+
 from rpackagemanager import rpackagemanager
 import rpy2.robjects as robjects
 from rpy2.robjects.packages import importr
