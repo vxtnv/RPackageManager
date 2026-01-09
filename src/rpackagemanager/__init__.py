@@ -59,23 +59,34 @@ class rpackagemanager:
 
         try:
             # Attempt 1: Standard installation to the local path
-            utils.install_packages(
-                StrVector([package_name]),
+            install_kwargs = dict(
                 lib=self.lib_path_str,
                 repos=mirror,
-                type="source",
-                dependencies=True
+                dependencies=True,
+            )
+
+            # Auf macOS & Windows: Binary bevorzugen → type NICHT setzen
+            # Auf Linux könntest du explizit type="source" setzen, wenn du willst
+            import sys
+            if sys.platform.startswith("linux"):
+                install_kwargs["type"] = "source"
+
+            utils.install_packages(
+                StrVector([package_name]),
+                **install_kwargs,
             )
         except Exception as e:
             print("⚠️ Standard install failed:", e)
             print("⚠️ Trying fallback with checkBuilt = FALSE...")
+
             robjects.r(f'''
             tryCatch(
-            install.packages("{package_name}",
-                lib="{self.lib_path_str}",
-                repos="[https://cloud.r-project.org](https://cloud.r-project.org)",
-                type="source",
-                checkBuilt=FALSE
+            install.packages(
+                "{package_name}",
+                lib = "{self.lib_path_str}",
+                repos = "{mirror}",
+                dependencies = TRUE,
+                checkBuilt = FALSE
             ),
             error = function(err) 
                 message("R-install error: ", conditionMessage(err))
@@ -83,7 +94,6 @@ class rpackagemanager:
             
             )
             ''')
-
         # Check: Is it now in the local folder?
         if local_pkg_path.exists():
             print(f"✅ '{package_name}' successfully installed in venv.")
