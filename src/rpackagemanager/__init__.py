@@ -56,6 +56,7 @@ class rpackagemanager:
         # Use a stable mirror
         mirror = "https://cloud.r-project.org"
         
+
         try:
             # Attempt 1: Standard installation to the local path
             utils.install_packages(
@@ -65,15 +66,22 @@ class rpackagemanager:
                 type="source",
                 dependencies=True
             )
-        except Exception:
-            # Attempt 2: Fallback (ignore checks)
-            print("⚠️ Standard install failed. Using fallback...")
+        except Exception as e:
+            print("⚠️ Standard install failed:", e)
+            print("⚠️ Trying fallback with checkBuilt = FALSE...")
             robjects.r(f'''
-                install.packages("{package_name}",
-                  lib="{self.lib_path_str}",
-                  repos="{mirror}",
-                  type="source",
-                checkBuilt=FALSE)
+            tryCatch(
+            install.packages("{package_name}",
+                lib="{self.lib_path_str}",
+                repos="[https://cloud.r-project.org](https://cloud.r-project.org)",
+                type="source",
+                checkBuilt=FALSE
+            ),
+            error = function(err) 
+                message("R-install error: ", conditionMessage(err))
+                stop(err)
+            
+            )
             ''')
 
         # Check: Is it now in the local folder?
