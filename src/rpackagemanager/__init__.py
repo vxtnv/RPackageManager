@@ -26,9 +26,13 @@ import sys
 
 class rpackagemanager:
     def __init__(self, lib_dirname="r_libs"):
-        self.venv_path = os.environ.get("VIRTUAL_ENV")
-        if self.venv_path:
-            self.lib_path = Path(self.venv_path) / lib_dirname
+        venv_path = os.environ.get("VIRTUAL_ENV")
+
+        if not venv_path and sys.prefix != sys.base_prefix:
+            venv_path = sys.prefix
+
+        if venv_path:
+            self.lib_path = Path(venv_path) / lib_dirname
         else:
             self.lib_path = Path.cwd() / lib_dirname
 
@@ -36,8 +40,9 @@ class rpackagemanager:
         self.lib_path_str = str(self.lib_path.absolute())
 
         robjects.r(f'.libPaths(c("{self.lib_path_str}", .libPaths()))')
-
         print(f"📦 R-Manager ready. Library: {self.lib_path_str}")
+
+
 
     def install_packages(self, package_name: str):
         """Installs package MANDATORILY into the local folder."""
