@@ -40,7 +40,7 @@ class rpackagemanager:
         self.lib_path_str = str(self.lib_path.absolute())
 
         robjects.r(f'.libPaths(c("{self.lib_path_str}", .libPaths()))')
-        print(f"📦 R-Manager ready. Library: {self.lib_path_str}")
+        # print(f"📦 R-Manager ready. Library: {self.lib_path_str}")
 
 
 
@@ -50,7 +50,7 @@ class rpackagemanager:
         local_pkg_path = self.lib_path / package_name
 
         if local_pkg_path.exists():
-            print(f"✅ Package '{package_name}' already exists LOCALLY.")
+            # print(f"✅ Package '{package_name}' already exists LOCALLY.")
             return
 
         print(f"⏳ Installing '{package_name}' to {self.lib_path_str} ...")
