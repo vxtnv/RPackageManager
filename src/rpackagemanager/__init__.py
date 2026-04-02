@@ -5,10 +5,20 @@ from pathlib import Path
 
 # --- MAC SILICON SETUP ---
 # Sets R_HOME so that rpy2 finds the Homebrew-R installation
+import subprocess
+
 if sys.platform == "darwin":
-    homebrew_r = Path("/opt/homebrew/lib/R")
-    if homebrew_r.exists():
-        os.environ["R_HOME"] = str(homebrew_r)
+    if "R_HOME" not in os.environ:
+        try:
+            r_home = subprocess.check_output(
+                ["R", "RHOME"], text=True
+            ).strip()
+            os.environ["R_HOME"] = r_home
+        except FileNotFoundError:
+            # Fallback: Homebrew
+            homebrew_r = Path("/opt/homebrew/lib/R")
+            if homebrew_r.exists():
+                os.environ["R_HOME"] = str(homebrew_r)
 
 # Attempt imports; a clear Exception is thrown on error,
 # but sys.exit() is avoided to prevent tools from crashing.
